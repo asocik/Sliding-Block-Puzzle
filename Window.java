@@ -9,6 +9,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.PrintStream;
+
 import javax.swing.*;
 
 public class Window extends JFrame implements ActionListener
@@ -17,6 +18,7 @@ public class Window extends JFrame implements ActionListener
 	private JPanel infoBar;
 	private JPanel infoBarButtons;
 	private JPanel tiles;
+	private PuzzleCreator puzzleCreator;
 	
 	// Information bar items
 	private JLabel numOfMovesLabel;
@@ -36,7 +38,7 @@ public class Window extends JFrame implements ActionListener
 	private JMenuItem exit;
 	private JMenuItem rules;
 	private JMenuItem about;
-	
+	private JMenuItem addPuzzle;
 	private JTextArea textArea;
 	private JScrollPane scrollPane;
 	
@@ -54,10 +56,12 @@ public class Window extends JFrame implements ActionListener
 		exit = new JMenuItem("Exit");
 		rules = new JMenuItem("Rules");
 		about = new JMenuItem("About");
+		addPuzzle = new JMenuItem("Add Puzzle");
 		
 		game.add(hint);
 		game.add(solve);
 		game.add(reset);
+		game.add(addPuzzle);
 		game.add(exit);
 		help.add(rules);
 		help.add(about);
@@ -71,11 +75,12 @@ public class Window extends JFrame implements ActionListener
 		exit.addActionListener(this);
 		rules.addActionListener(this);
 		about.addActionListener(this);
+		addPuzzle.addActionListener(this);
 
 		// Change some of the colors to make the menu stand out
-		game.setBackground(Color.DARK_GRAY);
-		help.setBackground(Color.DARK_GRAY);
-		menuBar.setBackground(Color.DARK_GRAY);
+		game.setBackground(Color.GRAY);
+		help.setBackground(Color.GRAY);
+		menuBar.setBackground(Color.GRAY);
 		
 		setJMenuBar(menuBar);	// Add menuBar to the frame
 		
@@ -124,6 +129,11 @@ public class Window extends JFrame implements ActionListener
         PrintStream printStream = new PrintStream(new CustomOutputStream(textArea));
         System.setOut(printStream);
         add(scrollPane, BorderLayout.EAST);
+        
+      //---------------------------------------------------------
+      // Read in data from files
+      //---------------------------------------------------------
+       puzzleCreator = new PuzzleCreator();
 	}
 	
 	/**------------------------------------------------------------------------
@@ -173,24 +183,19 @@ public class Window extends JFrame implements ActionListener
 		// Action listener for Rules menu item
 		if (e.getSource() == rules)
 		{
-			String output = "To solve the puzzle move the the goal piece\n"
+			String output = "To solve the puzzle move the the goal piece (Z)\n"
 						  + "all the way to the right side of the board.\n"
 						  + "Clear the way by moving the other pieces.\n\n"
-						  + "For a challenge try to match the minimum\n"
+						  + "For a challenge, try to match the minimum\n"
 						  + "moves needed.";
 			JOptionPane.showMessageDialog(null, output, "Rules", EXIT_ON_CLOSE);
 		}
 		
 		// Action listener for About menu item
 		if (e.getSource() == about)
-		{
-			JLabel output = new JLabel();	// JLable was used for text positioning 
-			// Used html to create newlines in JLabel - can't just use '\n'
-			output.setText("<html>Program Developers:<br>Adam Socik<br>Plaimanus "
-						+ "Lueondee<br>Khurratul-Ain Naseer<br><br>"
-						+ "UIC CS 342 Software Design Spring 2014</html>");
-			
-			output.setHorizontalAlignment(JLabel.CENTER);
+		{			
+			String output = "Program Developer: Adam Socik\n"
+			+ "UIC CS 342 Software Design Spring 2014";
 			JOptionPane.showMessageDialog(null, output, "About", EXIT_ON_CLOSE);
 		}
 		
@@ -205,6 +210,25 @@ public class Window extends JFrame implements ActionListener
 		{
 			
 		}
+		
+		// Action listener for adding a new puzzle
+		if (e.getSource() == addPuzzle)
+		{
+			puzzleCreator.addUserPuzzle();
+		}
+	}
+	
+	/**------------------------------------------------------------------------
+	 * Main creates the Jframe for the GUI
+	 * ------------------------------------------------------------------------*/
+	public static void main(String[] args) 
+	{
+		JFrame window = new Window();
+		window.setTitle("Sliding Block Puzzles");
+		window.setVisible(true);
+		window.setSize(800, 500);
+		window.setLocationRelativeTo(null);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }
 
