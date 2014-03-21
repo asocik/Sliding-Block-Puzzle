@@ -19,17 +19,20 @@ public class PuzzleCreator extends JFrame
 	private static final long serialVersionUID = 1L;
 	private ArrayList<String> puzzleFiles;	// List of all pre-loaded puzzles
 	private int puzzleCounter;				// Counter for which puzzle to load
-	private char board[][];					
-	private ArrayList<Character> movement;	// Movement of each block based on index				
-	private int rows;			// Number of rows on the board
-	private int columns;		// Number of columns on the board
+	private ArrayList<Block> resetBlocks;
+	private char resetBoard[][];
+	protected char board[][];
+	protected ArrayList<Block> blocks;					
+	protected int rows;			
+	protected int columns;		
 	
 	public PuzzleCreator() 
 	{
 		puzzleCounter = 0;
 		puzzleFiles = new ArrayList<String>();
-		movement = new ArrayList<Character>();
-		// Add ten puzzle files to list
+		blocks = new ArrayList<Block>();
+		
+		// Add ten puzzle file names to list
 		for (int i=0; i<10; i++)
 			puzzleFiles.add("puzzle"+ i +".txt");
 		
@@ -45,7 +48,7 @@ public class PuzzleCreator extends JFrame
 	 * direction of movement, or overlap with another block, it is not added to 
 	 * the board.
 	 * 
-	 * @param source	Index in puzzleFiles to load
+	 * @param source	puzzle in puzzleFiles to load
 	 * ------------------------------------------------------------------------*/
 	public void loadNextPuzzle(int source) 
 	{
@@ -62,7 +65,7 @@ public class PuzzleCreator extends JFrame
 			}
 			
 			Scanner fileReader = new Scanner(new File(puzzleFiles.get(source)));
-			rows = fileReader.nextInt() + 2;
+			rows = fileReader.nextInt() + 2;		// +2 for a border
 			columns = fileReader.nextInt() + 2;
 			
 			if (rows < 1 || columns < 1)
@@ -74,7 +77,7 @@ public class PuzzleCreator extends JFrame
 			
 			// Clear out old data
 			board = new char[rows][columns];	
-			movement.clear();
+			blocks.clear();
 			
 			// Fill the board with all '*'
 			for (int i = 0; i < rows; i++)
@@ -124,7 +127,7 @@ public class PuzzleCreator extends JFrame
 				{
 					if (board[startrow][startcol+i] != '*')
 					{
-						System.out.println("Error: block overlap: " + startrow + " " 
+						System.out.println("Error: block overlap: \n" + startrow + " " 
 						+ startcol + " " + width + " " + height + " " + direction);
 						
 						continue;	// Skip processing the rest of the piece 
@@ -136,7 +139,7 @@ public class PuzzleCreator extends JFrame
 				{
 					if (board[startrow+i][startcol] != '*')
 					{
-						System.out.println("Error: block overlap: " + startrow + " " 
+						System.out.println("Error: block overlap: \n" + startrow + " " 
 						+ startcol + " " + width + " " + height + " " + direction);
 						
 						continue;	// Skip processing the rest of the piece 
@@ -152,11 +155,11 @@ public class PuzzleCreator extends JFrame
 				//---------------------------------------------------------
 				if (direction == 'h' || direction == 'v' || direction == 'b' || direction == 'n')
 				{
-					movement.add(direction);
+					// Intentionally left empty
 				}
 				else 
 				{
-					System.out.println("Error: Invalid direction for puzzle piece: " + startrow + " " 
+					System.out.println("Error: Invalid direction for puzzle piece: \n" + startrow + " " 
 									  + startcol + " " + width + " " + height + " " + direction);
 					continue;	// Skip processing the rest of the piece 
 				}
@@ -164,6 +167,7 @@ public class PuzzleCreator extends JFrame
 				//---------------------------------------------------------
 				// Passed all tests so add the block to the board
 				//---------------------------------------------------------
+				char blockID;
 				if (!containsGoal)	// If there is not a goal piece yet then add one
 				{
 					// Add the rows
@@ -175,6 +179,7 @@ public class PuzzleCreator extends JFrame
 						board[startrow+i][startcol] = 'Z';
 					
 					containsGoal = true;
+					blockID = 'Z';
 				}
 				else
 				{
@@ -186,15 +191,20 @@ public class PuzzleCreator extends JFrame
 					for (int i=0; i<height; i++)
 						board[startrow+i][startcol] = (char) blockCount;
 					
+					blockID = (char) blockCount;
 					blockCount++;
 					
-					//  If used numbers 1-9 then start using lower case letters (97 = 'a')
+					// If used numbers 1-9 then start using lower case letters (97 = 'a')
 					if (blockCount == 58)
 						blockCount = 97;
-					//  If used a-z then start using upper case letters (65 = 'A')
+					// If used a-z then start using upper case letters (65 = 'A')
 					if (blockCount == 122)
 						blockCount = 65;
 				}
+				
+				// Create a new block and add it to the list
+				blocks.add(new Block(startrow, startcol, width, height, direction, blockID));
+				
 			} // End while (fileReader.hasNext()) 
 			
 			// Fill the '*' on the board with '.' - only the outer border will remain '*'
@@ -207,7 +217,32 @@ public class PuzzleCreator extends JFrame
 				}
 			}
 			
-			printBoard();
+			//---------------------------------------------------------
+			// Set up variables to allow for a reset
+			//---------------------------------------------------------
+			resetBoard = new char[rows][columns];
+			for (int i=0; i<rows; i++)
+				for(int j=0; j<columns; j++)
+					resetBoard[i][j] = board[i][j]; 
+			
+			// Copy over the original data of each block
+			resetBlocks= new ArrayList<Block>();
+			for (int i=0; i<blocks.size(); i++)
+			{
+				Block temp = new Block(blocks.get(i));
+				resetBlocks.add(temp);
+			}
+			
+			// Print out the board
+			System.out.println("Puzzle " + puzzleCounter + ":");
+			for (int i = 0; i < rows; i++)
+			{
+				for (int j=0; j<columns; j++)
+					System.out.print(board[i][j] + " ");
+				
+				System.out.println();
+			}
+			
 			fileReader.close();
 			
 			puzzleCounter++;	// Successfully read in a puzzle to increment to later read the next one  
@@ -217,21 +252,6 @@ public class PuzzleCreator extends JFrame
 			System.out.println("Failed to open puzzle: " + puzzleFiles.get(source));
 			puzzleCounter++;
 			loadNextPuzzle(puzzleCounter);	// Try to load the next puzzle in the list
-		}
-	}
-	
-	/**------------------------------------------------------------------------
-	 * Method prints out the board of the current puzzle
-	 * ------------------------------------------------------------------------*/
-	public void printBoard()
-	{
-		System.out.println("Puzzle " + puzzleCounter + ":");
-		for (int i = 0; i < rows; i++)
-		{
-			for (int j=0; j<columns; j++)
-				System.out.print(board[i][j] + " ");
-			
-			System.out.println();
 		}
 	}
 	
@@ -258,7 +278,35 @@ public class PuzzleCreator extends JFrame
 		else 
 			puzzleFiles.add(fileName);
 		
+		puzzleCounter--;	// Don't skip pre-loaded puzzles
+		
 		// Read the puzzle file and create the board
 		loadNextPuzzle(puzzleFiles.size()-1);
+	}
+	
+	/**------------------------------------------------------------------------
+	 * @return index of next puzzle to load for list
+	 * ------------------------------------------------------------------------*/
+	public int nextPuzzle()
+	{
+		return puzzleCounter;
+	}
+	
+	/**------------------------------------------------------------------------
+	 * Restores data values to when they were originally read in from a file
+	 * ------------------------------------------------------------------------*/
+	public void resetBoard()
+	{
+		for (int i=0; i<rows; i++)
+			for(int j=0; j<columns; j++)
+				board[i][j] = resetBoard[i][j]; 
+		
+		// Copy over the original data of each block
+		blocks.removeAll(blocks);
+		for (int i=0; i<resetBlocks.size(); i++)
+		{
+			Block temp = new Block(resetBlocks.get(i));
+			blocks.add(temp);
+		}
 	}
 }

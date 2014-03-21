@@ -4,7 +4,7 @@
  * 					
  * This class extends from OutputStream to redirect output to a JTextArrea
  * 
- * Code obtained from: 
+ * Code obtained in March 2014 from: 
  * http://www.codejava.net/java-se/swing/redirect-standard-output-streams-to-jtextarea
  * ------------------------------------------------------------------------*/
 import java.io.IOException;
