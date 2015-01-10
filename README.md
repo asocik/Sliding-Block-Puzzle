@@ -4,14 +4,14 @@ Sliding Block Puzzles is a puzzle game similar to Rush Hour implemented with the
 To play the game just import the project into Eclipse. Make sure the puzzle files are in the working directory.
 
 Use this format to create your own puzzles:
-*First line contains two integers - size of the grid
-*Second line has the starting position of the goal piece
-*Remaining lines contain other pieces
+* First line contains two integers - size of the grid
+* Second line has the starting position of the goal piece
+* Remaining lines contain other pieces
 
 Each piece's starting position is given by 4 integer values and one
 character value.
-*The first integer will be the starting row position.
-*The second integer will be the starting column position.
-*The third integer will be the width in columns.
-*The fourth integer will be the height in rows.
-*The character value will specify the direction of movement the piece can have. This character can be either an "h" for horizontal movement (left or right), a "v" for vertical movement (up or down), a "b" for both horizontal and vertical movement, or a "n" for no movement.
+* The first integer will be the starting row position.
+* The second integer will be the starting column position.
+* The third integer will be the width in columns.
+* The fourth integer will be the height in rows.
+* The character value will specify the direction of movement the piece can have. This character can be either an "h" for horizontal movement (left or right), a "v" for vertical movement (up or down), a "b" for both horizontal and vertical movement, or a "n" for no movement.
