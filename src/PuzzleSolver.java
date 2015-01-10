@@ -20,8 +20,6 @@ public class PuzzleSolver
 	/**------------------------------------------------------------------------
 	 * Subclass to hold a snapshot of the board and the list
 	 * of moves it took to get there.
-	 * 
-	 * Subclass was used because this is the only file that uses this class
 	 * ------------------------------------------------------------------------*/
 	private class Snapshot
 	{
@@ -78,8 +76,6 @@ public class PuzzleSolver
 	
 	/**------------------------------------------------------------------------
 	 * Subclass to hold information about a move
-	 * 
-	 * Subclass was used because this is the only file that uses this class
 	 * ------------------------------------------------------------------------*/
 	private class Move
 	{

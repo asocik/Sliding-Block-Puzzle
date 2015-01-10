@@ -4,10 +4,6 @@
  * 		CS 342 Software Design
  * 							
  * This class holds all of the necessary information for a given block. 
- *
- * Variables were left public because they are accessed constantly 
- * throughout the program - setters and getters would make the code more
- * cluttered and harder to follow.
  * ------------------------------------------------------------------------*/
 public class Block
 {
